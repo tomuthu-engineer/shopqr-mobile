@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Loginscreen from './src/screens/Auth/LoginScreen';
 import SingUpScreen from './src/screens/Auth/SingUpScreen';
 import VerificationScreen from './src/screens/Auth/VerificationScreen';
+import ForgotPasswordScreen from './src/screens/Auth/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,9 +22,15 @@ const App = () => {
           component={SingUpScreen}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="VerificationScreen"
-        component={VerificationScreen}
-        options={{headerShown:false}}
+        <Stack.Screen
+          name="VerificationScreen"
+          component={VerificationScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ForgotPasswordScreen"
+          component={ForgotPasswordScreen}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

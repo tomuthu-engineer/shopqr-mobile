@@ -16,6 +16,10 @@ const Loginscreen: React.FC = ({navigation}) => {
     navigation.navigate('SignUpScreen');
   };
 
+  const handleForgotButton = () => {
+    navigation.navigate('ForgotPasswordScreen');
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
@@ -58,7 +62,7 @@ const Loginscreen: React.FC = ({navigation}) => {
           <Text style={styles.rememberMeText}>Remember me</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          <Text style={styles.forgotPasswordText} onPress={handleForgotButton}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
 
