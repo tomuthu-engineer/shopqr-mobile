@@ -1,20 +1,23 @@
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  TextInput,
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import React, {useState} from 'react';
-
-const Loginscreen = () => {
+import CustomButton from '../../components/CustomButton';
+import CustomTextInput from '../../components/CustomInput';
+const Loginscreen: React.FC = ({navigation}) => {
   const [isChecked, setIsChecked] = useState(false);
+
+  const handleSignUp = () => {
+    navigation.navigate('SignUpScreen');
+  };
 
   return (
     <View style={styles.container}>
-
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
       {/* Logo Container */}
@@ -31,36 +34,17 @@ const Loginscreen = () => {
 
       {/* Input Boxes */}
       <View style={styles.inputContainer}>
-        <View style={styles.inputWrapper}>
-          <Image
-            source={require('../../assets/images/icons/mail.png')}
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Enter your email"
-            placeholderTextColor="#747688" // Placeholder color
-            style={styles.input}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        <View style={styles.inputWrapper}>
-          <Image
-            source={require('../../assets/images/icons/password.png')}
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Enter your password"
-            placeholderTextColor="#747688" // Placeholder color
-            style={styles.input}
-            secureTextEntry={true}
-          />
-          <Image
-            source={require('../../assets/images/icons/eye.png')}
-            style={styles.rightIcon}
-          />
-        </View>
+        <CustomTextInput
+          placeholder="Enter your email"
+          icon={require('../../assets/images/icons/mail.png')}
+          keyboardType="email-address"
+        />
+        <CustomTextInput
+          placeholder="Enter your password"
+          icon={require('../../assets/images/icons/password.png')}
+          rightIcon={require('../../assets/images/icons/eye.png')} // Initial icon
+          secureTextEntry={true} // Default to password being hidden
+        />
       </View>
 
       {/* Remember Me & Forgot Password */}
@@ -73,49 +57,46 @@ const Loginscreen = () => {
           </View>
           <Text style={styles.rememberMeText}>Remember me</Text>
         </TouchableOpacity>
-
         <TouchableOpacity>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
 
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.signInButton}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
-        <Image
-          source={require('../../assets/images/icons/arrow.png')}
-          style={styles.arrowIcon}
-        />
-      </TouchableOpacity>
+      <CustomButton
+        text="Sign In"
+        icon={require('../../assets/images/icons/arrow.png')}
+        onPress={() => console.log('Sign In Pressed')}
+        iconPosition="right"
+        variant="primary"
+      />
 
       {/* OR Text */}
       <View style={styles.orContainer}>
-        <View style={styles.line} />
         <Text style={styles.orText}>OR</Text>
-        <View style={styles.line} />
       </View>
 
-      {/* Google Sign In Button */}
-      <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={require('../../assets/images/icons/google.png')}
-          style={styles.socialIcon}
+      <View style={styles.signInContainer}>
+        {/* Google Sign In Button */}
+        <CustomButton
+          text="Sign In with Google"
+          icon={require('../../assets/images/icons/google.png')}
+          onPress={() => console.log('Google Sign In Pressed')}
+          variant="social"
         />
-        <Text style={styles.socialButtonText}>Sign In with Google</Text>
-      </TouchableOpacity>
 
-      {/* SecQR Sign In Button */}
-      <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={require('../../assets/images/icons/secqr.png')}
-          style={styles.socialIcon}
+        {/* SecQR Sign In Button */}
+        <CustomButton
+          text="Sign In with SecQR"
+          icon={require('../../assets/images/icons/secqr.png')}
+          onPress={() => console.log('SecQR Sign In Pressed')}
+          variant="social"
         />
-        <Text style={styles.socialButtonText}>Sign In with SecQR</Text>
-      </TouchableOpacity>
+      </View>
 
       {/* Don't have an account? Sign Up */}
       <View style={styles.signUpContainer}>
-        <Text style={styles.signUpText}>
+        <Text style={styles.signUpText} onPress={handleSignUp}>
           Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text>
         </Text>
       </View>
@@ -131,7 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   logoContainer: {
     alignItems: 'center',
@@ -157,36 +138,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '100%',
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 12, // Rounded corners
-    padding: 10,
-    paddingVertical:0,
-    marginBottom: 15,
-    backgroundColor: '#f9f9f9',
-    width: 371, // Set width
-    height: 56, // Set height
-  },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    resizeMode: 'contain',
-  },
-  rightIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 10,
-    resizeMode: 'contain',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
+    gap: 20,
+    marginBottom: 10,
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -194,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginTop: 10,
+    marginBottom: 40,
   },
   rememberMeContainer: {
     flexDirection: 'row',
@@ -224,74 +178,25 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     textDecorationLine: 'underline',
   },
-  signInButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#3D56F0',
-    borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    width: 271,
-    height: 58,
-    marginTop: 20,
-  },
-  signInButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  arrowIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 10,
-    resizeMode: 'contain',
-  },
   orContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginVertical: 20,
-    width: '100%',
   },
   line: {
-    height: 1,
     flex: 1,
+    height: 1,
     backgroundColor: '#ccc',
-    marginHorizontal: 10,
   },
   orText: {
+    marginHorizontal: 10,
     fontSize: 16,
     color: '#333',
-    fontWeight: 'bold',
   },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    width: 271,
-    height: 56,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  socialIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    resizeMode: 'contain',
-  },
-  socialButtonText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: 'bold',
+  signInContainer: {
+    gap: 20,
   },
   signUpContainer: {
-    alignItems: 'center',
     marginTop: 20,
   },
   signUpText: {
@@ -299,9 +204,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   signUpLink: {
-    fontSize: 16,
-    color: '#3D56F0',
+    color: '#007BFF',
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
 });
