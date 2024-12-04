@@ -25,7 +25,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   rightIcon,
   style,
   inputStyle,
-  secureTextEntry = true,
+  secureTextEntry = false,
   ...props
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Internal state to manage password visibility

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TouchableOpacity,Image} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native'; // Importing for navigation
 import CustomButton from '../../components/CustomButton';
@@ -8,7 +8,7 @@ const SignUpScreen = () => {
   const navigation = useNavigation(); // To handle navigation
 
   const handleSignIn = () => {
-    navigation.navigate('Loginscreen');
+    navigation.navigate('VerificationScreen');
   };
 
   const goBack = () => {
@@ -62,7 +62,7 @@ const SignUpScreen = () => {
       <CustomButton
         text="Sign Up"
         icon={require('../../assets/images/icons/arrow.png')}
-        onPress={() => console.log('Sign Up Pressed')}
+        onPress={handleSignIn}
         iconPosition="right"
         variant="primary"
       />
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 1, // Ensure it's above other elements
-
   },
   backIcon: {
     width: 24,
@@ -129,7 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,
-    marginTop:30
+    marginTop: 30,
   },
   inputContainer: {
     width: '100%',
