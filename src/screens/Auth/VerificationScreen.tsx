@@ -1,22 +1,77 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native'; // Importing for navigation
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ToastAndroid,
+} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {z} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
 
-const VerificationScreen = () => {
-  const navigation = useNavigation(); // To handle navigation
+// Zod Schema for OTP Validation
+const otpSchema = z.object({
+  otp1: z
+    .string()
+    .length(1, 'Each OTP field must contain one digit')
+    .regex(/^\d$/, 'Only digits are allowed'),
+  otp2: z
+    .string()
+    .length(1, 'Each OTP field must contain one digit')
+    .regex(/^\d$/, 'Only digits are allowed'),
+  otp3: z
+    .string()
+    .length(1, 'Each OTP field must contain one digit')
+    .regex(/^\d$/, 'Only digits are allowed'),
+  otp4: z
+    .string()
+    .length(1, 'Each OTP field must contain one digit')
+    .regex(/^\d$/, 'Only digits are allowed'),
+});
+
+type OTPFormInputs = z.infer<typeof otpSchema>;
+
+const VerificationScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm<OTPFormInputs>({
+    resolver: zodResolver(otpSchema),
+    mode: 'onChange',
+  });
+
+  const onSubmit = (data: OTPFormInputs) => {
+    const otpCode = `${data.otp1}${data.otp2}${data.otp3}${data.otp4}`;
+    console.log('OTP Submitted:', otpCode);
+    ToastAndroid.show('OTP Verified Successfully!', ToastAndroid.SHORT);
+  };
+
+  const onInvalid = () => {
+    const firstErrorMessage =
+      Object.values(errors)[0]?.message || 'Invalid OTP';
+    ToastAndroid.show(firstErrorMessage, ToastAndroid.SHORT);
+  };
 
   const goBack = () => {
-    navigation.goBack(); // Navigates back to the previous screen
+    navigation.goBack();
   };
+
+  const formValues = watch();
 
   return (
     <View style={styles.container}>
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={goBack}>
         <Image
-          source={require('../../assets/images/icons/back.png')} // Your back arrow icon
+          source={require('../../assets/images/icons/back.png')}
           style={styles.backIcon}
         />
       </TouchableOpacity>
@@ -31,25 +86,57 @@ const VerificationScreen = () => {
 
       {/* OTP Input Boxes */}
       <View style={styles.inputContainer}>
-        <CustomTextInput
-          maxLength={1}
-          keyboardType="numeric"
-          style={styles.otpInput}
+        <Controller
+          control={control}
+          name="otp1"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              maxLength={1}
+              keyboardType="numeric"
+              style={styles.otpInput}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          maxLength={1}
-          keyboardType="numeric"
-          style={styles.otpInput}
+        <Controller
+          control={control}
+          name="otp2"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              maxLength={1}
+              keyboardType="numeric"
+              style={styles.otpInput}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          maxLength={1}
-          keyboardType="numeric"
-          style={styles.otpInput}
+        <Controller
+          control={control}
+          name="otp3"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              maxLength={1}
+              keyboardType="numeric"
+              style={styles.otpInput}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          maxLength={1}
-          keyboardType="numeric"
-          style={styles.otpInput}
+        <Controller
+          control={control}
+          name="otp4"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              maxLength={1}
+              keyboardType="numeric"
+              style={styles.otpInput}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
       </View>
 
@@ -57,9 +144,15 @@ const VerificationScreen = () => {
       <CustomButton
         text="Verify"
         icon={require('../../assets/images/icons/arrow.png')}
-        onPress={() => console.log('Verify Pressed')}
+        onPress={handleSubmit(onSubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
+        disabled={
+          !formValues.otp1 ||
+          !formValues.otp2 ||
+          !formValues.otp3 ||
+          !formValues.otp4
+        }
       />
 
       {/* Resend OTP Text */}
@@ -79,13 +172,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     paddingHorizontal: 30,
-    paddingTop: 30, // Added padding from the top to align content properly
+    paddingTop: 30,
   },
   backButton: {
     position: 'absolute',
     top: 30,
     left: 20,
-    zIndex: 1, // Ensure it's above other elements
+    zIndex: 1,
   },
   backIcon: {
     width: 24,
@@ -98,27 +191,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 10,
-    marginTop: 40, // Added margin-top to create a gap between the back button and verification text
+    marginTop: 40,
   },
   verificationMessage: {
     alignSelf: 'flex-start',
     fontSize: 16,
     color: '#666',
-    marginBottom: 30, // Space between message and OTP inputs
+    marginBottom: 30,
   },
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     gap: 20,
-    marginBottom: 30, // Space between OTP fields and button
+    marginBottom: 30,
   },
   otpInput: {
-    width: 55,    // Set width to 55
-    height: 55,   // Set height to 55
-    textAlign: 'center',  // Horizontally centers the text
-    fontSize: 24, // Set font size to 24 for larger text
-    lineHeight: 55, // Vertically center the text
+    width: 55,
+    height: 55,
+    textAlign: 'center',
+    fontSize: 24,
+    lineHeight: 55,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
