@@ -1,16 +1,9 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ToastAndroid,
-} from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigation } from '@react-navigation/native';
+import {StyleSheet, Text, View, ToastAndroid} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {z} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
 
@@ -23,7 +16,7 @@ const signUpSchema = z
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string().min(6, 'Confirm password must match'),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
@@ -35,7 +28,7 @@ const SignUpScreen: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors, },
+    formState: {errors},
     watch,
   } = useForm<SignUpFormInputs>({
     resolver: zodResolver(signUpSchema),
@@ -49,12 +42,13 @@ const SignUpScreen: React.FC = () => {
   };
 
   const onInvalid = (errors: any) => {
-    const firstErrorMessage = Object.values(errors)?.[0]?.message || 'Validation failed';
+    const firstErrorMessage =
+      Object.values(errors)?.[0]?.message || 'Validation failed';
     ToastAndroid.show(firstErrorMessage, ToastAndroid.SHORT);
   };
 
   const goBack = () => {
-    navigation.goBack();
+    navigation.navigate('LoginScreen');
   };
 
   // Watch all input fields to track the form state
@@ -62,14 +56,6 @@ const SignUpScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={goBack}>
-        <Image
-          source={require('../../assets/images/icons/back.png')}
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-
       {/* Sign Up Text */}
       <Text style={styles.signUpText}>Sign Up</Text>
 
@@ -78,7 +64,7 @@ const SignUpScreen: React.FC = () => {
         <Controller
           control={control}
           name="fullName"
-          render={({ field: { onChange, value } }) => (
+          render={({field: {onChange, value}}) => (
             <CustomTextInput
               placeholder="Full Name"
               icon={require('../../assets/images/icons/user.png')}
@@ -91,7 +77,7 @@ const SignUpScreen: React.FC = () => {
         <Controller
           control={control}
           name="email"
-          render={({ field: { onChange, value } }) => (
+          render={({field: {onChange, value}}) => (
             <CustomTextInput
               placeholder="Enter your email"
               icon={require('../../assets/images/icons/mail.png')}
@@ -105,7 +91,7 @@ const SignUpScreen: React.FC = () => {
         <Controller
           control={control}
           name="phone"
-          render={({ field: { onChange, value } }) => (
+          render={({field: {onChange, value}}) => (
             <CustomTextInput
               placeholder="Phone Number"
               icon={require('../../assets/images/icons/user.png')}
@@ -119,7 +105,7 @@ const SignUpScreen: React.FC = () => {
         <Controller
           control={control}
           name="password"
-          render={({ field: { onChange, value } }) => (
+          render={({field: {onChange, value}}) => (
             <CustomTextInput
               placeholder="Enter your password"
               icon={require('../../assets/images/icons/password.png')}
@@ -134,7 +120,7 @@ const SignUpScreen: React.FC = () => {
         <Controller
           control={control}
           name="confirmPassword"
-          render={({ field: { onChange, value } }) => (
+          render={({field: {onChange, value}}) => (
             <CustomTextInput
               placeholder="Confirm your password"
               icon={require('../../assets/images/icons/password.png')}
@@ -154,7 +140,13 @@ const SignUpScreen: React.FC = () => {
         onPress={handleSubmit(onSubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
-        disabled={ !formValues.fullName || !formValues.email || !formValues.phone || !formValues.password || !formValues.confirmPassword}
+        disabled={
+          !formValues.fullName ||
+          !formValues.email ||
+          !formValues.phone ||
+          !formValues.password ||
+          !formValues.confirmPassword
+        }
       />
 
       {/* OR Section */}
@@ -162,7 +154,7 @@ const SignUpScreen: React.FC = () => {
         <Text style={styles.orText}>OR</Text>
       </View>
 
-      <View style={styles.signInContainer}>
+      <View style={styles.signInButtonContainer}>
         <CustomButton
           text="Sign Up with Google"
           icon={require('../../assets/images/icons/google.png')}
@@ -198,44 +190,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 30,
   },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-  },
   signUpText: {
     alignSelf: 'flex-start',
     fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,
-    marginTop: 30,
   },
   inputContainer: {
     width: '100%',
     gap: 20,
-    marginBottom: 10,
+    marginBottom: 30,
   },
   orContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 20,
   },
   orText: {
     fontSize: 16,
     color: '#333',
   },
-  signInContainer: {
+  signInButtonContainer: {
     gap: 20,
-    marginTop: 20,
+  },
+  signInContainer: {
+    marginTop: 10,
   },
   signInText: {
-    textAlign:'center',
+    textAlign: 'center',
     fontSize: 16,
     color: '#333',
   },

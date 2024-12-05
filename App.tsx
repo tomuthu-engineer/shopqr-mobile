@@ -1,26 +1,26 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import Loginscreen from './src/screens/Auth/LoginScreen';
 import SingUpScreen from './src/screens/Auth/SingUpScreen';
 import VerificationScreen from './src/screens/Auth/VerificationScreen';
 import ForgotPasswordScreen from './src/screens/Auth/ForgotPasswordScreen';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Loginscreen"
+          name="LoginScreen"
           component={Loginscreen}
           options={{headerShown: false}}
         />
         <Stack.Screen
           name="SignUpScreen"
           component={SingUpScreen}
-          options={{headerShown: false}}
+          options={{title:'',headerStyle:{elevation:0,height:50}}}
         />
         <Stack.Screen
           name="VerificationScreen"
