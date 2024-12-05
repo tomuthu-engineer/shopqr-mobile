@@ -6,11 +6,46 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  ToastAndroid,
 } from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {z} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+});
+
+type LoginFormInputs = z.infer<typeof loginSchema>;
+
 const Loginscreen: React.FC = ({navigation}) => {
   const [isChecked, setIsChecked] = useState(false);
+
+  const {
+    control,
+    watch,
+    handleSubmit,
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = (data: LoginFormInputs) => {
+    console.log('Form Data:', data);
+    ToastAndroid.show('Signed in successfully!', ToastAndroid.SHORT);
+  };
+
+  const onInvalid = (errors: any) => {
+    const firstErrorMessage =
+      Object.values(errors)?.[0]?.message || 'Validation failed';
+    ToastAndroid.show(firstErrorMessage, ToastAndroid.SHORT);
+  };
 
   const handleSignUp = () => {
     navigation.navigate('SignUpScreen');
@@ -19,6 +54,8 @@ const Loginscreen: React.FC = ({navigation}) => {
   const handleForgotButton = () => {
     navigation.navigate('ForgotPasswordScreen');
   };
+
+  const formValues = watch();
 
   return (
     <View style={styles.container}>
@@ -38,16 +75,33 @@ const Loginscreen: React.FC = ({navigation}) => {
 
       {/* Input Boxes */}
       <View style={styles.inputContainer}>
-        <CustomTextInput
-          placeholder="Enter your email"
-          icon={require('../../assets/images/icons/mail.png')}
-          keyboardType="email-address"
+        <Controller
+          control={control}
+          name="email"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              placeholder="Enter your email"
+              icon={require('../../assets/images/icons/mail.png')}
+              keyboardType="email-address"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          placeholder="Enter your password"
-          icon={require('../../assets/images/icons/password.png')}
-          rightIcon={require('../../assets/images/icons/eye.png')} // Initial icon
-          secureTextEntry={true} // Default to password being hidden
+
+        <Controller
+          control={control}
+          name="password"
+          render={({field: {onChange, value}}) => (
+            <CustomTextInput
+              placeholder="Enter your password"
+              icon={require('../../assets/images/icons/password.png')}
+              rightIcon={require('../../assets/images/icons/eye.png')}
+              secureTextEntry={true}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
       </View>
 
@@ -62,7 +116,9 @@ const Loginscreen: React.FC = ({navigation}) => {
           <Text style={styles.rememberMeText}>Remember me</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={styles.forgotPasswordText} onPress={handleForgotButton}>Forgot Password?</Text>
+          <Text style={styles.forgotPasswordText} onPress={handleForgotButton}>
+            Forgot Password?
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -70,9 +126,10 @@ const Loginscreen: React.FC = ({navigation}) => {
       <CustomButton
         text="Sign In"
         icon={require('../../assets/images/icons/arrow.png')}
-        onPress={() => console.log('Sign In Pressed')}
+        onPress={handleSubmit(onSubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
+        disabled= {!formValues.email || !formValues.password}
       />
 
       {/* OR Text */}
@@ -81,7 +138,6 @@ const Loginscreen: React.FC = ({navigation}) => {
       </View>
 
       <View style={styles.signInContainer}>
-        {/* Google Sign In Button */}
         <CustomButton
           text="Sign In with Google"
           icon={require('../../assets/images/icons/google.png')}
@@ -89,7 +145,6 @@ const Loginscreen: React.FC = ({navigation}) => {
           variant="social"
         />
 
-        {/* SecQR Sign In Button */}
         <CustomButton
           text="Sign In with SecQR"
           icon={require('../../assets/images/icons/secqr.png')}
@@ -98,7 +153,6 @@ const Loginscreen: React.FC = ({navigation}) => {
         />
       </View>
 
-      {/* Don't have an account? Sign Up */}
       <View style={styles.signUpContainer}>
         <Text style={styles.signUpText} onPress={handleSignUp}>
           Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text>
@@ -186,11 +240,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 20,
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ccc',
   },
   orText: {
     marginHorizontal: 10,

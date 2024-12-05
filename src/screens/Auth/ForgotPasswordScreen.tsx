@@ -1,20 +1,51 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ToastAndroid,
+} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
+import {useForm, Controller} from 'react-hook-form';
+import {z} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+
+const resetschema = z.object({
+  email: z.string().email('invalid email address'),
+});
+
+type resetFormInput = z.infer<typeof resetschema>;
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation();
 
-  const handleResetPassword = () => {
-    console.log('Password Reset Requested');
+  const {control, watch, handleSubmit} = useForm<resetFormInput>({
+    resolver: zodResolver(resetschema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  const onsubmit = (data: resetFormInput) => {
+    console.log(data);
+    ToastAndroid.show('Reset link sent successfully', ToastAndroid.SHORT);
+    console.log(data);
+  };
+
+  const onInvalid = (errors: any) => {
+    ToastAndroid.show(errors.email.message, ToastAndroid.SHORT);
+    console.log('first', errors);
   };
 
   const goBack = () => {
     navigation.goBack();
   };
 
+  const formValues = watch();
   return (
     <View style={styles.container}>
       {/* Back Button */}
@@ -34,20 +65,29 @@ const ForgotPasswordScreen = () => {
       </Text>
 
       {/* Email Input */}
-      <CustomTextInput
-        placeholder="Enter your email"
-        icon={require('../../assets/images/icons/mail.png')}
-        keyboardType="email-address"
-        style={styles.input}
+      <Controller
+        name="email"
+        control={control}
+        render={({field: {onChange, value}}) => (
+          <CustomTextInput
+            placeholder="Enter your email"
+            icon={require('../../assets/images/icons/mail.png')}
+            keyboardType="email-address"
+            style={styles.input}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
 
       {/* Send Button */}
       <CustomButton
         text="Send"
         icon={require('../../assets/images/icons/arrow.png')}
-        onPress={handleResetPassword}
+        onPress={handleSubmit(onsubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
+        disabled={!formValues.email}
       />
     </View>
   );
@@ -79,7 +119,7 @@ const styles = StyleSheet.create({
     color: '#120D26',
     alignSelf: 'flex-start',
     marginBottom: 10,
-    marginTop:40,
+    marginTop: 40,
   },
   instructionText: {
     fontSize: 16,

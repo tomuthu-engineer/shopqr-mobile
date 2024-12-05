@@ -16,6 +16,7 @@ interface CustomButtonProps {
   isLoading?: boolean;
   iconPosition?: 'left' | 'right';
   variant?: 'primary' | 'outline' | 'social'; // Button types for styling
+  disabled?: boolean; // Allow disabling of button
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -25,21 +26,25 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   isLoading = false,
   iconPosition = 'left',
   variant = 'primary',
+  disabled = false,
 }) => {
   const isPrimary = variant === 'primary';
   const isOutline = variant === 'outline';
   const isSocial = variant === 'social';
 
+  const buttonStyles = [
+    styles.button,
+    isPrimary && styles.primaryButton,
+    isOutline && styles.outlineButton,
+    isSocial && styles.socialButton,
+    disabled && styles.disabledButton, // Apply disabled styles
+  ];
+
   return (
     <TouchableOpacity
-      style={[
-        styles.button,
-        isPrimary && styles.primaryButton,
-        isOutline && styles.outlineButton,
-        isSocial && styles.socialButton,
-      ]}
+      style={buttonStyles}
       onPress={onPress}
-      disabled={isLoading} // Disable button while loading
+      disabled={isLoading || disabled} // Disable button while loading or if explicitly disabled
     >
       {iconPosition === 'left' && !isLoading && icon && (
         <Image source={icon} style={styles.icon} />
@@ -54,6 +59,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
             isPrimary && styles.primaryText,
             isOutline && styles.outlineText,
             isSocial && styles.socialText,
+            disabled && styles.disabledText, // Change text color when disabled
           ]}>
           {text}
         </Text>
@@ -77,7 +83,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 15,
     height: 56,
-    width: 271,
+    width: '80%', // Make the button width responsive
+    maxWidth: 271, // Set a max width for larger screens
   },
   primaryButton: {
     backgroundColor: '#5669FF',
@@ -111,5 +118,11 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc', // Grey out the button when disabled
+  },
+  disabledText: {
+    color: '#999', // Grey out the text when the button is disabled
   },
 });

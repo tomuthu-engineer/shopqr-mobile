@@ -1,26 +1,71 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
-import {useNavigation} from '@react-navigation/native'; // Importing for navigation
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ToastAndroid,
+} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
 
-const SignUpScreen = () => {
-  const navigation = useNavigation(); // To handle navigation
+// Zod Schema for Form Validation
+const signUpSchema = z
+  .object({
+    fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(6, 'Confirm password must match'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
-  const handleSignIn = () => {
+type SignUpFormInputs = z.infer<typeof signUpSchema>;
+
+const SignUpScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, },
+    watch,
+  } = useForm<SignUpFormInputs>({
+    resolver: zodResolver(signUpSchema),
+    mode: 'onChange', // This will trigger validation on field change
+  });
+
+  const onSubmit = (data: SignUpFormInputs) => {
+    ToastAndroid.show('Sign-Up successful!', ToastAndroid.SHORT);
+    console.log('Sign-Up Data:', data);
     navigation.navigate('VerificationScreen');
   };
 
-  const goBack = () => {
-    navigation.goBack(); // Navigates back to the previous screen
+  const onInvalid = (errors: any) => {
+    const firstErrorMessage = Object.values(errors)?.[0]?.message || 'Validation failed';
+    ToastAndroid.show(firstErrorMessage, ToastAndroid.SHORT);
   };
+
+  const goBack = () => {
+    navigation.goBack();
+  };
+
+  // Watch all input fields to track the form state
+  const formValues = watch();
 
   return (
     <View style={styles.container}>
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={goBack}>
         <Image
-          source={require('../../assets/images/icons/back.png')} // Your back arrow icon
+          source={require('../../assets/images/icons/back.png')}
           style={styles.backIcon}
         />
       </TouchableOpacity>
@@ -28,33 +73,77 @@ const SignUpScreen = () => {
       {/* Sign Up Text */}
       <Text style={styles.signUpText}>Sign Up</Text>
 
-      {/* Input Boxes */}
+      {/* Input Fields */}
       <View style={styles.inputContainer}>
-        <CustomTextInput
-          placeholder="Full Name"
-          icon={require('../../assets/images/icons/user.png')}
+        <Controller
+          control={control}
+          name="fullName"
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              placeholder="Full Name"
+              icon={require('../../assets/images/icons/user.png')}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          placeholder="Enter your email"
-          icon={require('../../assets/images/icons/mail.png')}
-          keyboardType="email-address"
+
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              placeholder="Enter your email"
+              icon={require('../../assets/images/icons/mail.png')}
+              keyboardType="email-address"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          placeholder="Phone Number"
-          icon={require('../../assets/images/icons/user.png')}
-          keyboardType="phone-pad"
+
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              placeholder="Phone Number"
+              icon={require('../../assets/images/icons/user.png')}
+              keyboardType="phone-pad"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          placeholder="Enter your password"
-          icon={require('../../assets/images/icons/password.png')}
-          rightIcon={require('../../assets/images/icons/eye.png')}
-          secureTextEntry={true}
+
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              placeholder="Enter your password"
+              icon={require('../../assets/images/icons/password.png')}
+              rightIcon={require('../../assets/images/icons/eye.png')}
+              secureTextEntry={true}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <CustomTextInput
-          placeholder="Confirm your password"
-          icon={require('../../assets/images/icons/password.png')}
-          rightIcon={require('../../assets/images/icons/eye.png')}
-          secureTextEntry={true}
+
+        <Controller
+          control={control}
+          name="confirmPassword"
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              placeholder="Confirm your password"
+              icon={require('../../assets/images/icons/password.png')}
+              rightIcon={require('../../assets/images/icons/eye.png')}
+              secureTextEntry={true}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
       </View>
 
@@ -62,35 +151,33 @@ const SignUpScreen = () => {
       <CustomButton
         text="Sign Up"
         icon={require('../../assets/images/icons/arrow.png')}
-        onPress={handleSignIn}
+        onPress={handleSubmit(onSubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
+        disabled={ !formValues.fullName || !formValues.email || !formValues.phone || !formValues.password || !formValues.confirmPassword}
       />
 
-      {/* OR Text */}
+      {/* OR Section */}
       <View style={styles.orContainer}>
         <Text style={styles.orText}>OR</Text>
       </View>
 
       <View style={styles.signInContainer}>
-        {/* Google Sign In Button */}
         <CustomButton
           text="Sign Up with Google"
           icon={require('../../assets/images/icons/google.png')}
-          onPress={() => console.log('Google Sign In Pressed')}
+          onPress={() => console.log('Google Sign Up Pressed')}
           variant="social"
         />
 
-        {/* SecQR Sign In Button */}
         <CustomButton
           text="Sign Up with SecQR"
           icon={require('../../assets/images/icons/secqr.png')}
-          onPress={() => console.log('SecQR Sign In Pressed')}
+          onPress={() => console.log('SecQR Sign Up Pressed')}
           variant="social"
         />
       </View>
 
-      {/* Already have an account? Sign In */}
       <View style={styles.signInContainer}>
         <Text style={styles.signInText} onPress={goBack}>
           Already have an account?{' '}
@@ -115,7 +202,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 30,
     left: 20,
-    zIndex: 1, // Ensure it's above other elements
   },
   backIcon: {
     width: 24,
@@ -138,10 +224,9 @@ const styles = StyleSheet.create({
   orContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   orText: {
-    marginHorizontal: 10,
     fontSize: 16,
     color: '#333',
   },
@@ -150,6 +235,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   signInText: {
+    textAlign:'center',
     fontSize: 16,
     color: '#333',
   },
