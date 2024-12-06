@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, ToastAndroid} from 'react-native';
+import {StyleSheet, Text, View, ToastAndroid, ScrollView} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -28,7 +28,6 @@ const SignUpScreen: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: {errors},
     watch,
   } = useForm<SignUpFormInputs>({
     resolver: zodResolver(signUpSchema),
@@ -55,128 +54,130 @@ const SignUpScreen: React.FC = () => {
   const formValues = watch();
 
   return (
-    <View style={styles.container}>
-      {/* Sign Up Text */}
-      <Text style={styles.signUpText}>Sign Up</Text>
+    <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps="handled">
+      <View style={styles.container}>
+        {/* Sign Up Text */}
+        <Text style={styles.signUpText}>Sign Up</Text>
 
-      {/* Input Fields */}
-      <View style={styles.inputContainer}>
-        <Controller
-          control={control}
-          name="fullName"
-          render={({field: {onChange, value}}) => (
-            <CustomTextInput
-              placeholder="Full Name"
-              icon={require('../../assets/images/icons/user.png')}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
+        {/* Input Fields */}
+        <View style={styles.inputContainer}>
+          <Controller
+            control={control}
+            name="fullName"
+            render={({field: {onChange, value}}) => (
+              <CustomTextInput
+                placeholder="Full Name"
+                icon={require('../../assets/images/icons/user.png')}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="email"
-          render={({field: {onChange, value}}) => (
-            <CustomTextInput
-              placeholder="Enter your email"
-              icon={require('../../assets/images/icons/mail.png')}
-              keyboardType="email-address"
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
+          <Controller
+            control={control}
+            name="email"
+            render={({field: {onChange, value}}) => (
+              <CustomTextInput
+                placeholder="Enter your email"
+                icon={require('../../assets/images/icons/mail.png')}
+                keyboardType="email-address"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="phone"
-          render={({field: {onChange, value}}) => (
-            <CustomTextInput
-              placeholder="Phone Number"
-              icon={require('../../assets/images/icons/user.png')}
-              keyboardType="phone-pad"
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
+          <Controller
+            control={control}
+            name="phone"
+            render={({field: {onChange, value}}) => (
+              <CustomTextInput
+                placeholder="Phone Number"
+                icon={require('../../assets/images/icons/user.png')}
+                keyboardType="phone-pad"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="password"
-          render={({field: {onChange, value}}) => (
-            <CustomTextInput
-              placeholder="Enter your password"
-              icon={require('../../assets/images/icons/password.png')}
-              rightIcon={require('../../assets/images/icons/eye.png')}
-              secureTextEntry={true}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
+          <Controller
+            control={control}
+            name="password"
+            render={({field: {onChange, value}}) => (
+              <CustomTextInput
+                placeholder="Enter your password"
+                icon={require('../../assets/images/icons/password.png')}
+                rightIcon={require('../../assets/images/icons/eye.png')}
+                secureTextEntry={true}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="confirmPassword"
-          render={({field: {onChange, value}}) => (
-            <CustomTextInput
-              placeholder="Confirm your password"
-              icon={require('../../assets/images/icons/password.png')}
-              rightIcon={require('../../assets/images/icons/eye.png')}
-              secureTextEntry={true}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-      </View>
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({field: {onChange, value}}) => (
+              <CustomTextInput
+                placeholder="Confirm your password"
+                icon={require('../../assets/images/icons/password.png')}
+                rightIcon={require('../../assets/images/icons/eye.png')}
+                secureTextEntry={true}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+        </View>
 
-      {/* Sign Up Button */}
-      <CustomButton
-        text="Sign Up"
-        icon={require('../../assets/images/icons/arrow.png')}
-        onPress={handleSubmit(onSubmit, onInvalid)}
-        iconPosition="right"
-        variant="primary"
-        disabled={
-          !formValues.fullName ||
-          !formValues.email ||
-          !formValues.phone ||
-          !formValues.password ||
-          !formValues.confirmPassword
-        }
-      />
-
-      {/* OR Section */}
-      <View style={styles.orContainer}>
-        <Text style={styles.orText}>OR</Text>
-      </View>
-
-      <View style={styles.signInButtonContainer}>
+        {/* Sign Up Button */}
         <CustomButton
-          text="Sign Up with Google"
-          icon={require('../../assets/images/icons/google.png')}
-          onPress={() => console.log('Google Sign Up Pressed')}
-          variant="social"
+          text="Sign Up"
+          icon={require('../../assets/images/icons/arrow.png')}
+          onPress={handleSubmit(onSubmit, onInvalid)}
+          iconPosition="right"
+          variant="primary"
+          disabled={
+            !formValues.fullName ||
+            !formValues.email ||
+            !formValues.phone ||
+            !formValues.password ||
+            !formValues.confirmPassword
+          }
         />
 
-        <CustomButton
-          text="Sign Up with SecQR"
-          icon={require('../../assets/images/icons/secqr.png')}
-          onPress={() => console.log('SecQR Sign Up Pressed')}
-          variant="social"
-        />
-      </View>
+        {/* OR Section */}
+        <View style={styles.orContainer}>
+          <Text style={styles.orText}>OR</Text>
+        </View>
 
-      <View style={styles.signInContainer}>
-        <Text style={styles.signInText} onPress={goBack}>
-          Already have an account?{' '}
-          <Text style={styles.signInLink}>Sign In</Text>
-        </Text>
+        <View style={styles.signInButtonContainer}>
+          <CustomButton
+            text="Sign Up with Google"
+            icon={require('../../assets/images/icons/google.png')}
+            onPress={() => console.log('Google Sign Up Pressed')}
+            variant="social"
+          />
+
+          <CustomButton
+            text="Sign Up with SecQR"
+            icon={require('../../assets/images/icons/secqr.png')}
+            onPress={() => console.log('SecQR Sign Up Pressed')}
+            variant="social"
+          />
+        </View>
+
+        <View style={styles.signInContainer}>
+          <Text style={styles.signInText} onPress={goBack}>
+            Already have an account?{' '}
+            <Text style={styles.signInLink}>Sign In</Text>
+          </Text>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

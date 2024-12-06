@@ -13,6 +13,7 @@ import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomInput';
+import {useAuth} from '../../context';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,12 +24,9 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const Loginscreen: React.FC = ({navigation}) => {
   const [isChecked, setIsChecked] = useState(false);
-
-  const {
-    control,
-    watch,
-    handleSubmit,
-  } = useForm<LoginFormInputs>({
+  const {user} = useAuth();
+  console.log(user);
+  const {control, watch, handleSubmit} = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -129,7 +127,7 @@ const Loginscreen: React.FC = ({navigation}) => {
         onPress={handleSubmit(onSubmit, onInvalid)}
         iconPosition="right"
         variant="primary"
-        disabled= {!formValues.email || !formValues.password}
+        disabled={!formValues.email || !formValues.password}
       />
 
       {/* OR Text */}
@@ -141,7 +139,7 @@ const Loginscreen: React.FC = ({navigation}) => {
         <CustomButton
           text="Sign In with Google"
           icon={require('../../assets/images/icons/google.png')}
-          onPress={() => console.log('Google Sign In Pressed')}
+          onPress={() => console.log('Google Sign In Pressed', user)}
           variant="social"
         />
 
